@@ -60,7 +60,7 @@ Em um ambiente de produção, a autenticação seria feita por um backend (como 
 ## 📸 Preview do Projeto
 
 Tela de **Login e Cadastro**:  
-![Login e Cadastro](https://i.imgur.com/AqKInZR.png)  
+![Login e Cadastro](https://imgur.com/ffsfLTB)  
 
 Tela de **Cadastro (Criar Conta)**:  
 ![Criar Conta](https://i.imgur.com/Mb8YfGq.png)  
