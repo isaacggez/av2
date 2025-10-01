@@ -22,8 +22,8 @@ O sistema utiliza o **localStorage** do navegador para persistir os dados dos us
 ## 🛠️ Tecnologias Utilizadas
 
 - **HTML5**: Estrutura base do projeto.  
-- **Tailwind CSS (via CDN)**: Framework CSS utilizado para toda a estilização e garantir um design totalmente responsivo e moderno.  
-- **JavaScript Puro**: Responsável pela lógica de formulários, validações, alternância de tela e manipulação do `localStorage`.  
+- **Tailwind CSS**: Framework CSS utilizado para toda a estilização e garantir um design totalmente responsivo e moderno.  
+- **JavaScript**: Responsável pela lógica de formulários, validações, alternância de tela e manipulação do `localStorage`.  
 
 ---
 
@@ -31,8 +31,7 @@ O sistema utiliza o **localStorage** do navegador para persistir os dados dos us
 
 Em um ambiente de produção, a autenticação seria feita por um backend (como Firebase ou servidor próprio), mas para simular o funcionamento real de forma simples, usamos o **localStorage**:
 
-- **Chave de Usuários (`auth_users`)**: Armazena um objeto JSON onde as chaves são os e-mails dos usuários e os valores são as suas senhas.  
-  ⚠️ Importante: Este método é apenas para fins de **demonstração local**. Senhas nunca devem ser salvas em texto puro no `localStorage` em aplicações reais, devido a riscos de segurança.  
+- **Chave de Usuários (`auth_users`)**: Armazena um objeto JSON onde as chaves são os e-mails dos usuários e os valores são as suas senhas.   
 
 - **Chave de Sessão (`current_user`)**: Armazena o e-mail do usuário atualmente logado. Se esta chave estiver preenchida, o sistema considera o usuário como autenticado.  
 
