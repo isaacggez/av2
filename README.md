@@ -1,4 +1,4 @@
-# Tela de Login e Cadastro (Autenticação Local)
+# 🔑 Tela de Login e Cadastro 
 
 Este projeto consiste em uma tela de **Login** e **Cadastro** totalmente responsiva, desenvolvida em um único arquivo **HTML**, utilizando **Tailwind CSS** para estilização moderna e **JavaScript puro** para implementar a lógica de autenticação.  
 
@@ -54,5 +54,18 @@ Em um ambiente de produção, a autenticação seria feita por um backend (como 
 
 ### 🔹 Recuperação de Sessão
 - Se você fizer login e **recarregar a página**, o JavaScript verifica o `localStorage` e o mantém na Tela Pós-Login.  
+
+---
+
+## 📸 Preview do Projeto
+
+Tela de **Login e Cadastro**:  
+![Login e Cadastro](https://i.imgur.com/AqKInZR.png)  
+
+Tela de **Cadastro (Criar Conta)**:  
+![Criar Conta](https://i.imgur.com/Mb8YfGq.png)  
+
+Tela **Pós-Login**:  
+![Tela Pós-Login](https://i.imgur.com/SoHnvBT.png)  
 
 ---
