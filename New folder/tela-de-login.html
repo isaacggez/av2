@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login com Persistência Local</title>
+   
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        
+        :root {
+            --primary-color: #3b82f6;
+            --accent-color: #0ea5e9;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            padding: 1rem;
+        }
+
+        
+        .password-wrapper {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #9ca3af;
+            transition: color 0.15s;
+            font-size: 1.5rem;
+            line-height: 1.5rem; 
+        }
+        .toggle-password:hover {
+            color: #e5e7eb;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            color: white;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Processando...
+    </div>
+
+    <div id="auth-card" class="bg-gray-800 p-8 md:p-12 rounded-xl shadow-2xl w-full max-w-sm hidden">
+        <h1 id="form-title" class="text-3xl font-extrabold text-white text-center mb-8">
+            Acesso
+        </h1>
+
+        <form id="login-form" onsubmit="handleLogin(event)">
+            
+            <div class="mb-5">
+                <label for="login-email" class="block text-sm font-medium text-gray-300 mb-2">E-mail</label>
+                <input 
+                    type="email" 
+                    id="login-email" 
+                    placeholder="Seu e-mail"
+                    required
+                    class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 border border-gray-700 focus:border-blue-500 focus:ring-blue-500 outline-none transition duration-150"
+                >
+            </div>
+
+            <div class="mb-6">
+                <label for="login-senha" class="block text-sm font-medium text-gray-300 mb-2">Senha</label>
+                <div class="password-wrapper">
+                    <input 
+                        type="password" 
+                        id="login-senha" 
+                        placeholder="Sua senha secreta"
+                        required
+                        class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 border border-gray-700 focus:border-blue-500 focus:ring-blue-500 outline-none pr-12 transition duration-150"
+                    >
+                    <span class="toggle-password" onclick="togglePasswordVisibility('login-senha')">
+                        <span id="login-toggle-icon" role="img" aria-label="Mostrar ou Esconder Senha">👁️</span>
+                    </span>
+                </div>
+            </div>
+
+            <button 
+                type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition duration-200 ease-in-out transform hover:scale-[1.01] shadow-lg mb-4"
+            >
+                Entrar
+            </button>
+        </form>
+
+        <form id="register-form" onsubmit="handleRegister(event)" class="hidden">
+            
+            <div class="mb-5">
+                <label for="register-email" class="block text-sm font-medium text-gray-300 mb-2">E-mail</label>
+                <input 
+                    type="email" 
+                    id="register-email" 
+                    placeholder="Seu e-mail para cadastro"
+                    required
+                    class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 border border-gray-700 focus:border-blue-500 focus:ring-blue-500 outline-none transition duration-150"
+                >
+            </div>
+
+            <div class="mb-6">
+                <label for="register-senha" class="block text-sm font-medium text-gray-300 mb-2">Senha (Mínimo 6 caracteres)</label>
+                <div class="password-wrapper">
+                    <input 
+                        type="password" 
+                        id="register-senha" 
+                        placeholder="Crie uma senha"
+                        required
+                        minlength="6"
+                        class="w-full px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 border border-gray-700 focus:border-blue-500 focus:ring-blue-500 outline-none pr-12 transition duration-150"
+                    >
+                    <span class="toggle-password" onclick="togglePasswordVisibility('register-senha')">
+                        <span id="register-toggle-icon" role="img" aria-label="Mostrar ou Esconder Senha">👁️</span>
+                    </span>
+                </div>
+            </div>
+
+            <button 
+                type="submit"
+                class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition duration-200 ease-in-out transform hover:scale-[1.01] shadow-lg mb-4"
+            >
+                Registrar
+            </button>
+        </form>
+
+        <div class="text-center text-sm space-y-2">
+            <p class="text-gray-400">
+                <span id="prompt-text">Não tem uma conta?</span>
+                <a href="#" id="switch-link" class="text-blue-400 font-medium hover:text-blue-300 transition duration-150" onclick="event.preventDefault(); switchForm()">
+                    Crie sua Conta
+                </a>
+            </p>
+        </div>
+
+        <div id="message-box" class="mt-6 p-3 text-white text-center rounded-lg hidden">
+        </div>
+
+    </div>
+
+    <div id="app-content" class="bg-white p-8 md:p-12 rounded-xl shadow-2xl w-full max-w-xl text-center hidden">
+        <h2 class="text-4xl font-bold text-gray-800 mb-4">🎉 Login Bem-Sucedido! 🎉</h2>
+        <p class="text-xl text-gray-600 mb-6">Bem-vindo(a) de volta! Você está autenticado(a).</p>
+        <button onclick="handleLogout()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-6 rounded-lg transition duration-200 mt-4">Sair da Conta</button>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', checkSession);
+
+        const USERS_KEY = 'auth_users';
+        const CURRENT_USER_KEY = 'current_user';
+        
+        function getUsersFromStorage() {
+            try {
+                const usersJson = localStorage.getItem(USERS_KEY);
+                return usersJson ? JSON.parse(usersJson) : {};
+            } catch (e) {
+                console.error("Erro ao carregar usuários do localStorage:", e);
+                return {};
+            }
+        }
+
+        function saveUsersToStorage(users) {
+            try {
+                localStorage.setItem(USERS_KEY, JSON.stringify(users));
+            } catch (e) {
+                console.error("Erro ao salvar usuários no localStorage:", e);
+            }
+        }
+
+        function showMessage(text, isError = false) {
+            const messageBox = document.getElementById('message-box');
+            messageBox.classList.remove('hidden', 'bg-red-600', 'bg-green-600');
+            messageBox.classList.add(isError ? 'bg-red-600' : 'bg-green-600');
+            messageBox.textContent = text;
+            
+            setTimeout(() => {
+                messageBox.classList.add('hidden');
+            }, 6000);
+        }
+
+        function checkSession() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+            const currentUser = localStorage.getItem(CURRENT_USER_KEY);
+            const authCard = document.getElementById('auth-card');
+            const appContent = document.getElementById('app-content');
+
+            if (currentUser) {
+
+                authCard.classList.add('hidden');
+                appContent.classList.remove('hidden');
+            } else {
+                
+                authCard.classList.remove('hidden');
+                appContent.classList.add('hidden');
+                switchForm('login'); 
+            }
+        }
+
+        function switchForm(mode) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const formTitle = document.getElementById('form-title');
+            const switchLink = document.getElementById('switch-link');
+            const promptText = document.getElementById('prompt-text');
+            
+            if (mode === 'register' || loginForm.classList.contains('hidden')) {
+                
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                formTitle.textContent = 'Acesso';
+                switchLink.textContent = 'Crie sua Conta';
+                promptText.textContent = 'Não tem uma conta?';
+            } else {
+               
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                formTitle.textContent = 'Criar Conta';
+                switchLink.textContent = 'Voltar para o Login';
+                promptText.textContent = 'Já tem uma conta?';
+            }
+        }
+
+        function togglePasswordVisibility(inputId) {
+            const senhaInput = document.getElementById(inputId);
+            const iconId = inputId.replace('senha', 'toggle-icon');
+            const icon = document.getElementById(iconId); 
+            
+            if (senhaInput.type === 'password') {
+                senhaInput.type = 'text';
+               
+                icon.textContent = '❌'; 
+            } else {
+                senhaInput.type = 'password';
+                
+                icon.textContent = '👁️'; 
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-senha').value;
+            document.getElementById('loading-overlay').classList.remove('hidden');
+
+            const users = getUsersFromStorage();
+
+            if (!users[email] || users[email] !== password) {
+                showMessage('E-mail ou senha incorretos.', true);
+                document.getElementById('loading-overlay').classList.add('hidden');
+                return;
+            }
+
+            localStorage.setItem(CURRENT_USER_KEY, email);
+            showMessage('Login realizado com sucesso!', false);
+            checkSession();
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-senha').value;
+            document.getElementById('loading-overlay').classList.remove('hidden');
+
+            const users = getUsersFromStorage();
+
+            if (!email || !password) {
+                showMessage('Preencha todos os campos.', true);
+                document.getElementById('loading-overlay').classList.add('hidden');
+                return;
+            }
+
+            if (users[email]) {
+                showMessage('Este e-mail já está cadastrado. Tente fazer o login.', true);
+                document.getElementById('loading-overlay').classList.add('hidden');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('A senha deve ter pelo menos 6 caracteres.', true);
+                document.getElementById('loading-overlay').classList.add('hidden');
+                return;
+            }
+
+            users[email] = password;
+            saveUsersToStorage(users);
+            
+            showMessage('Cadastro realizado com sucesso! Faça login.', false);
+            
+            switchForm('register'); 
+            document.getElementById('loading-overlay').classList.add('hidden');
+        }
+        
+        function handleLogout() {
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            
+
+            localStorage.removeItem(CURRENT_USER_KEY);
+            
+            showMessage("Você saiu da sua conta.", false);
+            checkSession();
+        }
+
+        window.handleLogin = handleLogin;
+        window.handleRegister = handleRegister;
+        window.handleLogout = handleLogout;
+        window.switchForm = switchForm;
+        window.togglePasswordVisibility = togglePasswordVisibility;
+    </script>
+</body>
+</html>
